@@ -2,6 +2,9 @@ from queue import Queue
 from typing import Iterable, Callable
 from threading import Event
 
+from streaming_pipeline.structures.packets import PacketCarTelemetryData
+from streaming_pipeline.models import Participant
+
 
 class F1Processor:
     _QUEUE_GET_TIMEOUT = 5.0
@@ -27,3 +30,14 @@ class F1Processor:
         else:
             # just write to file
             pass
+
+    @staticmethod
+    def resolve_telemetry_packet(packet: PacketCarTelemetryData, participant: Participant):
+        if isinstance(packet, PacketCarTelemetryData):
+            player_car_idx = packet.header.player_car_index
+            telemetry_data_player = packet.car_telemetry_data[player_car_idx]
+            participant.brake = telemetry_data_player.brake
+            participant.speed = telemetry_data_player.speed
+            participant.steer = telemetry_data_player.steer
+            participant.engine_rpm = telemetry_data_player.engine_rpm
+            return participant

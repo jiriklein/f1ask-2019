@@ -1,13 +1,12 @@
 from queue import Queue
 from threading import Event, Thread
-from typing import Iterable
 
 
 from streaming_pipeline.receiver import F1Receiver
 
 
 def run(shared_queue: Queue, end_event: Event):
-    receiver = F1Receiver(output_queues=shared_queue, thread_end_event=end_event)
+    receiver = F1Receiver(output_queue=shared_queue, thread_end_event=end_event)
     receiver_thread = Thread(target=receiver.listen)
 
     receiver.connect()
