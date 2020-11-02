@@ -32,7 +32,9 @@ class F1Processor:
             pass
 
     @staticmethod
-    def resolve_telemetry_packet(packet: PacketCarTelemetryData, participant: Participant):
+    def strat_telemetry_packet_participant(
+        packet: PacketCarTelemetryData, participant: Participant
+    ):
         if isinstance(packet, PacketCarTelemetryData):
             player_car_idx = packet.header.player_car_index
             telemetry_data_player = packet.car_telemetry_data[player_car_idx]

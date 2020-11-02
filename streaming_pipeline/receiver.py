@@ -11,9 +11,7 @@ class F1Receiver:
     _SOCKET_TIMEOUT = 10.0
     _BASE_RECV_BYTES = 1400
 
-    def __init__(
-        self, output_queue: Queue, thread_end_event: Event, port: int = 20777
-    ):
+    def __init__(self, output_queue: Queue, thread_end_event: Event, port: int = 20777):
         self._queue = output_queue
         self._port = port
         self._end_event = thread_end_event
