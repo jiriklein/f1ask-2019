@@ -6,9 +6,19 @@ from typing import Iterable
 from streaming_pipeline.receiver import F1Receiver
 
 
-def run():
-    packet_queues = [Queue()]
-    thread_end_event = Event()
-    receiver = F1Receiver(
-        output_queues=packet_queues, thread_end_event=thread_end_event
-    )
+def run(shared_queues: Iterable[Queue], end_event: Event):
+    receiver = F1Receiver(output_queues=shared_queues, thread_end_event=end_event)
+    receiver_thread = Thread(target=receiver.listen)
+
+    receiver.connect()
+    receiver_thread.start()
+
+    while not end_event.is_set():
+        try:
+            if input().lower() == "end":
+                end_event.set()
+        except Exception as e:
+            print(e)
+            end_event.set()
+        finally:
+            receiver_thread.join()
