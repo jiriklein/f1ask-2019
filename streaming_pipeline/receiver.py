@@ -2,7 +2,6 @@ from queue import Queue
 import socket
 import struct
 from threading import Event
-from typing import Iterable
 
 from streaming_pipeline.structures.packets import PacketHeader
 
@@ -13,9 +12,9 @@ class F1Receiver:
     _BASE_RECV_BYTES = 1400
 
     def __init__(
-        self, output_queues: Iterable[Queue], thread_end_event: Event, port: int = 20777
+        self, output_queue: Queue, thread_end_event: Event, port: int = 20777
     ):
-        self._queues = output_queues
+        self._queue = output_queue
         self._port = port
         self._end_event = thread_end_event
         self._socket = None
@@ -41,8 +40,7 @@ class F1Receiver:
                 data, address = self._socket.recvfrom(self._BASE_RECV_BYTES)
                 packet = PacketHeader.unpack(data)
                 if packet:
-                    for _q in self._queues:
-                        _q.put(packet)
+                    self._queue.put(packet)
                     self.received_messages += 1
 
             except socket.timeout:

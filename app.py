@@ -7,7 +7,7 @@ from streaming_pipeline.runtime import run
 
 app = Flask(__name__)
 shared_event = Event()
-shared_queues = [Queue()]
+shared_queue = Queue()
 
 
 @app.route("/")
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     runtime = Thread(
         target=run,
         args=(
-            shared_queues,
+            shared_queue,
             shared_event,
         ),
         daemon=True,
