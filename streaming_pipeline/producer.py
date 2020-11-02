@@ -28,7 +28,7 @@ class F1Processor:
             for _q in self._output_queues:
                 _q.put(self.strategy(raw_pkt))
         else:
-            # just write to file
+            # TODO just write to file
             pass
 
     @staticmethod
