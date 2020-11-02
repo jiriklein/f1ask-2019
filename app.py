@@ -21,11 +21,6 @@ def kill_stream():
     return "Set the event to kill stream."
 
 
-@app.route("/error")
-def error():
-    Exception()
-
-
 if __name__ == "__main__":
     runtime = Thread(
         target=run,
