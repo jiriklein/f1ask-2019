@@ -4,6 +4,7 @@ from threading import Event
 
 from streaming_pipeline.structures.packets import PacketCarTelemetryData
 from streaming_pipeline.models import Participant
+from streaming_pipeline.utils import handle_timeout
 
 
 class F1Processor:
@@ -23,7 +24,10 @@ class F1Processor:
         self.strategy = strategy
 
     def produce(self):
-        raw_pkt = self._input_queue.get(block=True, timeout=self._QUEUE_GET_TIMEOUT)
+        raw_pkt = handle_timeout(
+            self._input_queue,
+            self._end_event,
+        )
         if self.strategy:
             for _q in self._output_queues:
                 _q.put(self.strategy(raw_pkt))
@@ -43,3 +47,12 @@ class F1Processor:
             participant.steer = telemetry_data_player.steer
             participant.engine_rpm = telemetry_data_player.engine_rpm
             return participant
+
+    @staticmethod
+    def speed_only(
+        packet: PacketCarTelemetryData,
+    ) -> int:
+        if isinstance(packet, PacketCarTelemetryData):
+            player_car_idx = packet.header.player_car_index
+            telemetry_data_player = packet.car_telemetry_data[player_car_idx]
+            return telemetry_data_player.speed

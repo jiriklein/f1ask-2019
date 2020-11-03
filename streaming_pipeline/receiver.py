@@ -32,14 +32,16 @@ class F1Receiver:
         # Bind to the server address
         self._socket.bind(("", self._port))
 
-    def listen(self):
+    def listen(self, process_packets: bool = True):
         while not self._end_event.is_set():
             try:
                 data, address = self._socket.recvfrom(self._BASE_RECV_BYTES)
                 packet = PacketHeader.unpack(data)
-                if packet:
+                if packet and process_packets:
                     self._queue.put(packet)
                     self.received_messages += 1
+                else:
+                    self._queue.put(data)
 
             except socket.timeout:
                 # check whether the event is set now
