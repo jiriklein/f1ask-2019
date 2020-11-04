@@ -24,16 +24,17 @@ class F1Processor:
         self.strategy = strategy
 
     def produce(self):
-        raw_pkt = handle_timeout(
-            self._input_queue,
-            self._end_event,
-        )
-        if self.strategy:
-            for _q in self._output_queues:
-                _q.put(self.strategy(raw_pkt))
-        else:
-            # TODO just write to file
-            pass
+        while True:
+            raw_pkt = handle_timeout(
+                self._input_queue,
+                self._end_event,
+            )
+            if self.strategy:
+                for _q in self._output_queues:
+                    _q.put(self.strategy(raw_pkt))
+            else:
+                # TODO just write to file
+                pass
 
     @staticmethod
     def strategy_telemetry_packet_participant(
@@ -55,4 +56,5 @@ class F1Processor:
         if isinstance(packet, PacketCarTelemetryData):
             player_car_idx = packet.header.player_car_index
             telemetry_data_player = packet.car_telemetry_data[player_car_idx]
+            print(telemetry_data_player.speed)
             return telemetry_data_player.speed
