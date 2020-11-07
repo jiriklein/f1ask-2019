@@ -1,9 +1,4 @@
-
 $(document).ready(function(){
-    // connect to the socket server.
-    var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
-    var numbers_received = [];
-
     function createGauge() {
         var opts = {
             angle: -0.2, // The span of the gauge arc
@@ -25,20 +20,37 @@ $(document).ready(function(){
 
         var target = document.getElementById('preview'); // your canvas element
         var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
-        gauge.maxValue = 300; // set max gauge value
-        gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
+        gauge.maxValue = 350; // set max gauge value
+        gauge.minValue = 0;  // Prefer setter over gauge.minValue = 0
         gauge.animationSpeed = 32; // set animation speed (32 is default value)
         gauge.set(0);
         return gauge
     }
 
+    function createGraph() {
+        // create starting graph data + conf
+        var graph_data = [{
+            y: [0],
+            mode: 'lines',
+            line: {color: '#80caf6'}
+        }]
+        Plotly.plot('graph', graph_data);
+    }
+
+    // connect to the socket server.
+    var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
+    var numbers_received = [];
+
     gg = createGauge()
+    createGraph()
+
+    // var cnt = 0;
 
     // receive details from server
     socket.on('f1', function(msg) {
-        console.log("Received number" + msg.data);
-        //maintain a list of ten numbers
-        if (numbers_received.length >= 10){
+        // console.log("Received number" + msg.data);
+        // maintain a list of a few numbers
+        if (numbers_received.length >= 4){
             numbers_received.shift()
         }
         numbers_received.push(msg.data);
@@ -46,7 +58,28 @@ $(document).ready(function(){
         for (var i = 0; i < numbers_received.length; i++){
             numbers_string = numbers_string + '<p>' + numbers_received[i].toString() + '</p>';
         }
+
+        // update the graph
+        // var addView = {
+        //   xaxis: {
+        //     range: [0, ++cnt]
+        //   }
+        // };
+        //
+        // var update = {
+        //   x:  [[cnt]],
+        //   y: [[msg.data]]
+        // };
+
+        // apply changes
+        // Plotly.relayout('graph', addView);
+        // Plotly.extendTraces('graph', update, [0])
+        Plotly.extendTraces('graph', {
+            y: [[msg.data]]
+        }, [0])
+
         $('#log').html(numbers_string);
-        gg.set(msg.data)
+        gg.set(msg.data);
+
     });
 });

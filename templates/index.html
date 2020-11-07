@@ -6,6 +6,7 @@
     <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
     <script type="text/javascript" src="http://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="../static/js/application.js"></script>
 </head>
@@ -28,6 +29,10 @@
     <div class="container">
         <p>Gauge should appear here:</p>
         <canvas width="380" height="240" id="preview"/>
+    </div>
+    <div class="container">
+        <p>Plotly Graph should appear here:</p>
+        <div id="graph"></div>
     </div>
 </body>
 </html>
